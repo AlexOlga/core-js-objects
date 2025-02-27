@@ -303,8 +303,17 @@ function sortCitiesArray(arr) {
  *    "Poland" => ["Lodz"]
  *   }
  */
-function group(/* array, keySelector, valueSelector */) {
-  throw new Error('Not implemented');
+function group(array, keySelector, valueSelector) {
+  const myMap = new Map();
+  array.forEach((item) => {
+    const key = keySelector(item);
+    const value = valueSelector(item);
+    if (!myMap.has(key)) {
+      myMap.set(key, []);
+    }
+    myMap.get(key).push(value);
+  });
+  return myMap;
 }
 
 /**
@@ -362,32 +371,60 @@ function group(/* array, keySelector, valueSelector */) {
  */
 
 const cssSelectorBuilder = {
-  element(/* value */) {
-    throw new Error('Not implemented');
+  gloss: {
+    element: [],
+    id: [],
+    class: [],
+    attr: [],
+    pseudoClass: [],
+    pseudoElement: [],
+    combine: [],
+  },
+  element(value) {
+    this.gloss.element.push(value);
+    return this.gloss;
   },
 
-  id(/* value */) {
-    throw new Error('Not implemented');
+  id(value) {
+    this.gloss.id.push(`#${value}`);
+    return this.gloss;
   },
 
-  class(/* value */) {
-    throw new Error('Not implemented');
+  class(value) {
+    this.gloss.class.push(`.${value}`);
+    return this.gloss;
   },
 
-  attr(/* value */) {
-    throw new Error('Not implemented');
+  attr(value) {
+    this.gloss.attr.push(`[${value}]`);
+    return this.gloss;
   },
 
-  pseudoClass(/* value */) {
-    throw new Error('Not implemented');
+  pseudoClass(value) {
+    this.gloss.pseudoClass.push(`:${value}`);
+    return this.gloss;
   },
 
-  pseudoElement(/* value */) {
-    throw new Error('Not implemented');
+  pseudoElement(value) {
+    this.gloss.pseudoElement.push(`::${value}`);
+    return this.gloss;
   },
 
-  combine(/* selector1, combinator, selector2 */) {
-    throw new Error('Not implemented');
+  combine(selector1, combinator, selector2) {
+    this.gloss.combine.push(`${selector1}${combinator}${selector2}`);
+    return this.gloss;
+  },
+  stringify() {
+    const arr = [];
+    if (this.gloss.element.length !== 0) arr.push(this.gloss.element);
+    if (this.gloss.attr.length !== 0) arr.push(this.gloss.attr);
+    if (this.gloss.id.length !== 0) arr.push(this.gloss.id);
+    if (this.gloss.class.length !== 0) arr.push(this.gloss.class);
+    if (this.gloss.combine.length !== 0) arr.push(this.gloss.combine);
+    if (this.gloss.pseudoClass.length !== 0) arr.push(this.gloss.pseudoClass);
+    if (this.gloss.pseudoElement.length !== 0)
+      arr.push(this.gloss.pseudoElement);
+    return arr.join('');
   },
 };
 
